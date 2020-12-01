@@ -30,9 +30,9 @@ export class Task extends Entity {
   assignedto?: string;
 
   @property({
-    type: 'number',
+    type: 'string',
   })
-  estimation?: number;
+  estimation?: string;
 
   @property({
     type: 'string',

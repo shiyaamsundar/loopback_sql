@@ -13,6 +13,7 @@ import {
   param,
   patch,
   post,
+  put,
   requestBody
 } from '@loopback/rest';
 import * as nodemailer from 'nodemailer';
@@ -20,7 +21,7 @@ import {
   Project,
   Task
 } from '../models';
-import {AdminRepository, ProjectRepository} from '../repositories';
+import {AdminRepository, ProjectRepository, TaskRepository} from '../repositories';
 
 
 
@@ -28,6 +29,7 @@ export class ProjectTaskController {
   constructor(
     @repository(ProjectRepository) protected projectRepository: ProjectRepository,
     @repository(AdminRepository) public adminRepository: AdminRepository,
+    @repository(TaskRepository) public taskRepository: TaskRepository,
   ) { }
 
   @get('/admin/projects/{id}/tasks', {
@@ -36,7 +38,7 @@ export class ProjectTaskController {
         description: 'Array of Project has many Task',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Task)},
+            schema: {type: 'array', items: getModelSchemaRef(Project)},
           },
         },
       },
@@ -44,12 +46,29 @@ export class ProjectTaskController {
   })
   async find(
     @param.path.number('id') id: number,
-    @param.query.object('filter') filter?: Filter<Task>,
+    @param.query.object('filter') filter?: Filter<Project>,
   ): Promise<Task[]> {
-    return this.projectRepository.tasks(id).find(filter);
+    const admindet=await this.projectRepository.findById(id,filter)
+    const email=admindet['postedby']
+    const notcomp=await this.taskRepository.find({
+      where: {and: [{createdby:email}, {status:"not completed"},{projectId:id}]},})
+      const comp=await this.taskRepository.find({
+        where: {and: [{createdby:email}, {status:"completed"},{projectId:id}]},})
+        const prog=await this.taskRepository.find({
+          where: {and: [{createdby:email}, {status:"in progress"},{projectId:id}]},})
+    const d:any={
+      ["comp"]:comp,
+      ["notcomp"]:notcomp,
+      ["prog"]:prog
+    }
+
+          return d
+
   }
 
   @post('/admin/projects/{id}/tasks', {
+
+
     responses: {
       '200': {
         description: 'Project model instance',
@@ -72,7 +91,8 @@ export class ProjectTaskController {
     }) task: Omit<Task, 'id'>,
   ): Promise<Task> {
 
-    const admindet:any=await this.adminRepository.find({where:{id:id}})
+
+    const admindet=await this.adminRepository.find({where:{id:id}})
 
     console.log(admindet)
 
@@ -87,7 +107,7 @@ export class ProjectTaskController {
       text: `You have been invited to a task  by:- ${admindet[0]['email']} Descption:- ${task.description} `
     };
 
-    transporter.sendMail( mailOptions, (error:any, info:any) => {
+    transporter.sendMail( mailOptions, (error, info) => {
       if (error) {
         return console.log(`error: ${error}`);
       }
@@ -100,6 +120,24 @@ export class ProjectTaskController {
 
     return this.projectRepository.tasks(id).create(task);
 
+  }
+  @get('/task/{id}', {
+    responses: {
+      '200': {
+        description: 'Admin model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Task, {includeRelations: true}),
+          },
+        },
+      },
+    },
+  })
+  async findById(
+    @param.path.number('id') id: number,
+    @param.query.object('filter') filter?: Filter<Task>,
+  ): Promise<Task> {
+    return this.taskRepository.findById(id,filter);
   }
 
   @patch('/admin/projects/{id}/tasks', {
@@ -139,4 +177,21 @@ export class ProjectTaskController {
   ): Promise<Count> {
     return this.projectRepository.tasks(id).delete(where);
   }
+
+  @put('/admins/task/{id}', {
+    responses: {
+      '204': {
+        description: 'Task PUT success',
+      },
+    },
+  })
+  async replaceById(
+    @param.path.number('id') id: number,
+    @requestBody() task: Task,
+  ): Promise<void> {
+    await this.taskRepository.replaceById(id,task);
+  }
+
+
+
 }

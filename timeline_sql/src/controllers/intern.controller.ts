@@ -152,8 +152,8 @@ export class InternController {
 
   ): Promise<Intern> {
 
-    const a:any=await this.internRepository.find({where:{adminId:id}})
-    return a
+    const res:any=await this.internRepository.find({where:{adminId:id}})
+    return res
 
 
   }
@@ -176,11 +176,21 @@ export class InternController {
 
   ): Promise<Intern> {
 
-    const interndet:any=await this.internRepository.findById(id,filter)
-    const email:any=interndet['email']
-    const res:any=await this.taskRepository.find({where:{assignedto:email}})
-    return res
+    const interndet=await this.internRepository.findById(id,filter)
+    const email=interndet['email']
+    const notcomp=await this.taskRepository.find({
+      where: {and: [{assignedto:email}, {status:"not completed"}]},})
+      const comp=await this.taskRepository.find({
+        where: {and: [{assignedto:email}, {status:"completed"}]},})
+        const prog=await this.taskRepository.find({
+          where: {and: [{assignedto:email}, {status:"in progress"}]},})
+    const d:any={
+      ["comp"]:comp,
+      ["notcomp"]:notcomp,
+      ["prog"]:prog
+    }
 
+          return d
   }
 
   @get('/interns/{id1}/project{id2}/tasks', {
@@ -202,8 +212,8 @@ export class InternController {
 
   ): Promise<Intern> {
 
-    const interndet:any=await this.internRepository.findById(id1,filter)
-    const email:any=interndet['email']
+    const interndet=await this.internRepository.findById(id1,filter)
+    const email=interndet['email']
     const res1:any=await this.taskRepository.find({
 
       where: {and: [{assignedto:email}, {projectId: id2}]},
@@ -232,10 +242,88 @@ export class InternController {
     @param.filter(Intern) filter?: FilterExcludingWhere<Intern>
 
   ): Promise<Intern> {
-    const interndet:any=await this.internRepository.findById(id,filter)
-    const email:any=interndet['email']
-    const res:any=await this.projectRepository.find({where:{assignedto:email}})
-    return res
+    const interndet=await this.internRepository.findById(id,filter)
+    const email=interndet['email']
+    const notcomp=await this.projectRepository.find({
+      where: {and: [{assignedto:email}, {status:"not completed"}]},})
+      const comp=await this.projectRepository.find({
+        where: {and: [{assignedto:email}, {status:"completed"}]},})
+        const prog=await this.projectRepository.find({
+          where: {and: [{assignedto:email}, {status:"in progress"}]},})
+    const d:any={
+      ["comp"]:comp,
+      ["notcomp"]:notcomp,
+      ["prog"]:prog
+    }
+
+          return d
+
+  }
+  @get('/interns/{id}/dashboard', {
+    responses: {
+      '200': {
+        description: 'Intern model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Intern, {includeRelations: true}),
+          },
+        },
+      },
+    },
+  })
+  async interndashboard(
+    @param.path.number('id') id: number,
+    @param.filter(Intern) filter?: FilterExcludingWhere<Intern>
+
+  ): Promise<Intern> {
+
+    const interndet=await this.internRepository.findById(id,filter)
+    const email=interndet['email']
+    const proj=await this.projectRepository.find({where:{assignedto:email}})
+    const taskk=await this.taskRepository.find({where:{assignedto:email}})
+    const taskleft=await this.taskRepository.find({
+
+      where: {and: [{assignedto:email}, {status:"not completed"}]},
+    })
+    const taskcomp=await this.taskRepository.find({
+
+      where: {and: [{assignedto:email}, {status:"completed"}]},
+    }
+    )
+    const  projcomp=await this.projectRepository.find({
+
+      where: {and: [{assignedto:email}, {status:"completed"}]},
+    }
+    )
+    const  projelft=await this.projectRepository.find({
+
+      where: {and: [{assignedto:email}, {status:"not completed"}]},
+    }
+    )
+
+    let wrkdays=0;
+
+    for (const i of projcomp) {
+
+      if(i["estimation"])
+      {
+      wrkdays+=i["estimation"]
+    }
+
+  }
+
+    const d:any={
+      ['projects']:proj,
+      ['task']:taskk,
+      ['intern']:interndet,
+      ['projcomp']:projcomp,
+      ['projleft']:projelft,
+      ['taskcomp']:taskcomp,
+      ['taskleft']:taskleft,
+      ['workedhours']:wrkdays,
+    }
+    console.log()
+    return d
 
   }
 
@@ -309,8 +397,8 @@ export class InternController {
       },
     }) task: Omit<Task, 'id'>,
   ): Promise<Task> {
-    const interndet:any=await this.internRepository.find({where:{id:id1}})
-    const adminid:any=interndet[0]['adminId']
+    const interndet=await this.internRepository.find({where:{id:id1}})
+    const adminid=interndet[0]['adminId']
     task.adminId=adminid
 
 

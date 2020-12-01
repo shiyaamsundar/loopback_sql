@@ -55,6 +55,7 @@
     "@loopback/rest-explorer": "^3.0.3",
     "@loopback/service-proxy": "^3.0.3",
     "@types/nodemailer": "^6.4.0",
+    "cors": "^2.8.5",
     "loopback-connector-mysql": "^5.4.4",
     "nodemailer": "^6.4.16",
     "tslib": "^2.0.0"

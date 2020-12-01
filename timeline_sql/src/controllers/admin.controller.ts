@@ -20,7 +20,7 @@ import {
 
   requestBody
 } from '@loopback/rest';
-import {Admin} from '../models';
+import {Admin, Task} from '../models';
 import {AdminRepository, InternRepository, ProjectRepository, TaskRepository} from '../repositories';
 
 export class AdminController {
@@ -134,6 +134,27 @@ export class AdminController {
   ): Promise<Admin> {
     return this.adminRepository.findById(id, filter);
   }
+  @get('/admins/{id}', {
+    responses: {
+      '200': {
+        description: 'Admin model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Admin, {includeRelations: true}),
+          },
+        },
+      },
+    },
+  })
+  async findBygmail(
+    @param.path.string('id') gmail: string,
+    // @param.filter(Admin) filter?: FilterExcludingWhere<Admin>
+
+  ): Promise<Admin> {
+    console.log('gmail:',gmail)
+    const res:any=await this.adminRepository.find({where:{'email':gmail}});
+    return res
+  }
 
   @patch('/admins/{id}', {
     responses: {
@@ -241,8 +262,101 @@ export class AdminController {
 
   ): Promise<Admin> {
     const res:any=await this.internRepository.find({where:{adminId:id}})
+    console.log("allintern");
+    console.log(res);
+
     return res
 
   }
+
+  @get('/admin/projecttask/{id}', {
+    responses: {
+      '200': {
+        description: 'Intern model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Task, {includeRelations: true}),
+          },
+        },
+      },
+    },
+  })
+  async findallprojecttask(
+    @param.path.number('id') id: number,
+    @param.filter(Task) filter?: FilterExcludingWhere<Task>
+
+  ): Promise<Task> {
+    const res:any=await this.taskRepository.find({where:{projectId:id}})
+    return res
+
+  }
+
+  // @get('/admins/{id}/dashboard', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Intern model instance',
+  //       content: {
+  //         'application/json': {
+  //           schema: getModelSchemaRef(Admin, {includeRelations: true}),
+  //         },
+  //       },
+  //     },
+  //   },
+  // })
+  // async interndashboard(
+  //   @param.path.number('id') id: number,
+  //   @param.filter(Admin) filter?: FilterExcludingWhere<Admin>
+
+  // ): Promise<Admin> {
+
+  //   const interndet=await this.adminRepository.findById(id,filter)
+  //   const email=interndet['email']
+  //   const proj=await this.projectRepository.find({where:{assignedto:email}})
+  //   const taskk=await this.taskRepository.find({where:{assignedto:email}})
+  //   const taskleft=await this.taskRepository.find({
+
+  //     where: {and: [{assignedto:email}, {status:"not completed"}]},
+  //   })
+  //   const taskcomp=await this.taskRepository.find({
+
+  //     where: {and: [{assignedto:email}, {status:"completed"}]},
+  //   }
+  //   )
+  //   const  projcomp=await this.projectRepository.find({
+
+  //     where: {and: [{assignedto:email}, {status:"completed"}]},
+  //   }
+  //   )
+  //   const  projelft=await this.projectRepository.find({
+
+  //     where: {and: [{assignedto:email}, {status:"not completed"}]},
+  //   }
+  //   )
+
+  //   let wrkdays=0;
+
+  //   for (const i of projcomp) {
+
+  //     if(i["estimation"])
+  //     {
+  //     wrkdays+=i["estimation"]
+  //   }
+
+  // }
+
+  //   const d:any={
+  //     ['projects']:proj,
+  //     ['task']:taskk,
+  //     ['intern']:interndet,
+  //     ['projcomp']:projcomp,
+  //     ['projleft']:projelft,
+  //     ['taskcomp']:taskcomp,
+  //     ['taskleft']:taskleft,
+  //     ['workedhours']:wrkdays,
+  //   }
+  //   console.log()
+  //   return d
+
+  // }
 
 }

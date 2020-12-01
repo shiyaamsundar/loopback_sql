@@ -2,6 +2,7 @@ import {
   Count,
   CountSchema,
   Filter,
+
   repository,
   Where
 } from '@loopback/repository';
@@ -21,13 +22,14 @@ import {
 
   Project
 } from '../models';
-import {AdminRepository, InternRepository} from '../repositories';
+import {AdminRepository, InternRepository, ProjectRepository} from '../repositories';
 
 
 export class AdminProjectController {
   constructor(
     @repository(AdminRepository) protected adminRepository: AdminRepository,
     @repository(InternRepository) protected internRepository: InternRepository,
+    @repository(ProjectRepository) protected projectRepository: ProjectRepository,
   ) { }
 
   @get('/admins/{id}/projects', {
@@ -48,6 +50,25 @@ export class AdminProjectController {
   ): Promise<Project[]> {
     return this.adminRepository.projects(id).find(filter);
   }
+  @get('/project/{id}', {
+    responses: {
+      '200': {
+        description: 'Admin model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Project, {includeRelations: true}),
+          },
+        },
+      },
+    },
+  })
+  async findById(
+    @param.path.number('id') id: number,
+    @param.query.object('filter') filter?: Filter<Project>,
+  ): Promise<Project> {
+    return this.projectRepository.findById(id,filter);
+  }
+
 
   @post('/admins/{id}/projects', {
     responses: {
@@ -167,7 +188,7 @@ export class AdminProjectController {
     },
   })
   async delete(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: number,
     @param.query.object('where', getWhereSchemaFor(Project)) where?: Where<Project>,
   ): Promise<Count> {
     return this.adminRepository.projects(id).delete(where);
