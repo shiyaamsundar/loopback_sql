@@ -189,6 +189,7 @@ export class ProjectTaskController {
     @param.path.number('id') id: number,
     @requestBody() task: Task,
   ): Promise<void> {
+    console.log("puttt",id,task)
     await this.taskRepository.replaceById(id,task);
   }
 

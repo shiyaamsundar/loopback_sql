@@ -409,5 +409,26 @@ export class InternController {
     return this.projectRepository.tasks(id2).create(task);
 
   }
+  @get('/interngmail/{id}', {
+    responses: {
+      '200': {
+        description: 'Admin model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Intern, {includeRelations: true}),
+          },
+        },
+      },
+    },
+  })
+  async findBygmail(
+    @param.path.string('id') gmail: string,
+
+
+  ): Promise<Intern> {
+    console.log('gmail:',gmail)
+    const res:any=await this.internRepository.find({where:{'email':gmail}});
+    return res
+  }
 
 }
