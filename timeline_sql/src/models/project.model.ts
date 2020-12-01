@@ -31,7 +31,7 @@ export class Project extends Entity {
   assignedto?: string;
 
   @property({
-    type: 'number',
+    type: 'string',
   })
   estimation?: number;
 

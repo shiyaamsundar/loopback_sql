@@ -14,7 +14,7 @@ import {
   param,
   patch,
   post,
-  requestBody
+  put, requestBody
 } from '@loopback/rest';
 import * as nodemailer from 'nodemailer';
 import {
@@ -92,6 +92,7 @@ export class AdminProjectController {
       },
     }) project: Omit<Project, 'id'>,
   ): Promise<Project> {
+    console.log("add project")
 
     const transporter = nodemailer.createTransport(
       `smtps://17tucs221@skct.edu.in:shiyaam123456789@smtp.gmail.com`
@@ -112,6 +113,8 @@ export class AdminProjectController {
     });
 
 
+      const est:any=project.estimation
+      console.log(parseInt(est))
 
 
     return this.adminRepository.projects(id).create(project);
@@ -193,4 +196,51 @@ export class AdminProjectController {
   ): Promise<Count> {
     return this.adminRepository.projects(id).delete(where);
   }
+  @put('/admins/project/{id}', {
+    responses: {
+      '204': {
+        description: 'Project PUT success',
+      },
+    },
+  })
+  async replaceById(
+    @param.path.number('id') id: number,
+    @requestBody() proj: Project,
+  ): Promise<void> {
+    await this.projectRepository.replaceById(id,proj);
+  }
+  @get('/admins/{id}/allprojects', {
+    responses: {
+      '200': {
+        description: 'Array of Project',
+        content: {
+          'application/json': {
+            schema: {type: 'array', items: getModelSchemaRef(Admin)},
+          },
+        },
+      },
+    },
+  })
+  async findallproject(
+    @param.path.number('id') id: number,
+    @param.query.object('filter') filter?: Filter<Admin>,
+  ): Promise<Project[]> {
+    const admindet=await this.adminRepository.findById(id,filter)
+    const email=admindet['email']
+    const notcomp=await this.projectRepository.find({
+      where: {and: [{postedby:email}, {status:"not completed"},{adminId:id}]},})
+      const comp=await this.projectRepository.find({
+        where: {and: [{postedby:email}, {status:"completed"},{adminId:id}]},})
+        const prog=await this.projectRepository.find({
+          where: {and: [{postedby:email}, {status:"in progress"},{adminId:id}]},})
+    const d:any={
+      ["comp"]:comp,
+      ["notcomp"]:notcomp,
+      ["prog"]:prog
+    }
+
+          return d
+
+  }
+
 }

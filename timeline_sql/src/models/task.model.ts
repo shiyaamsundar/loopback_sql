@@ -47,7 +47,7 @@ export class Task extends Entity {
 
 
   @property({
-    type: 'number',
+    type: 'string',
   })
   projectId?: number;
 

@@ -307,6 +307,8 @@ export class InternController {
 
       if(i["estimation"])
       {
+
+
       wrkdays+=i["estimation"]
     }
 

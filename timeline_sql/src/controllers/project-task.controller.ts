@@ -77,7 +77,7 @@ export class ProjectTaskController {
     },
   })
   async create(
-    @param.path.number('id') id: typeof Project.prototype.id,
+    @param.path.string('id') id: typeof Project.prototype.id,
     @requestBody({
       content: {
         'application/json': {
