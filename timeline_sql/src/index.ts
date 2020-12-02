@@ -1,11 +1,13 @@
 import {ApplicationConfig, TimelineSqlApplication} from './application';
 
+
 export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
   const app = new TimelineSqlApplication(options);
   await app.boot();
   await app.start();
+
 
   const url = app.restServer.url;
   console.log(`Server is running at ${url}`);
@@ -29,6 +31,13 @@ if (require.main === module) {
       openApiSpec: {
         // useful when used with OpenAPI-to-GraphQL to locate your application
         setServersFromRequest: true,
+      },
+      cors: {
+        origin: '*',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
+        credentials: true,
       },
     },
   };
