@@ -309,10 +309,11 @@ export class InternController {
       {
 
 
-      wrkdays+=i["estimation"]
+      wrkdays+=+i["estimation"]
     }
 
   }
+  console.log(wrkdays,projcomp)
 
     const d:any={
       ['projects']:proj,

@@ -1,15 +1,26 @@
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
 
+// const config = {
+//   name: 'db',
+//   connector: 'mysql',
+//   url: '',
+//   host: '127.0.0.1',
+//   port: 3306,
+//   user: 'root',
+//   password: '1234',
+//   database: 'timeline'
+// };
+
 const config = {
-  name: 'db',
+  name: ' sql12379687',
   connector: 'mysql',
   url: '',
-  host: '127.0.0.1',
+  host: 'sql12.freemysqlhosting.net',
   port: 3306,
-  user: 'root',
-  password: '1234',
-  database: 'timeline'
+  user: 'sql12379687',
+  password: 'QLQZzvRMp5',
+  database: 'sql12379687'
 };
 
 // Observe application's life cycle to disconnect the datasource when

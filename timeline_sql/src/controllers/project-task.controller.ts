@@ -45,17 +45,50 @@ export class ProjectTaskController {
     },
   })
   async find(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: number,
     @param.query.object('filter') filter?: Filter<Project>,
   ): Promise<Task[]> {
     const admindet=await this.projectRepository.findById(id,filter)
     const email=admindet['postedby']
     const notcomp=await this.taskRepository.find({
-      where: {and: [{createdby:email}, {status:"not completed"},{projectId:id}]},})
+      where: {and: [ {status:"not completed"},{projectId:id}]},})
       const comp=await this.taskRepository.find({
-        where: {and: [{createdby:email}, {status:"completed"},{projectId:id}]},})
+        where: {and: [ {status:"completed"},{projectId:id}]},})
         const prog=await this.taskRepository.find({
-          where: {and: [{createdby:email}, {status:"in progress"},{projectId:id}]},})
+          where: {and: [ {status:"in progress"},{projectId:id}]},})
+    const d:any={
+      ["comp"]:comp,
+      ["notcomp"]:notcomp,
+      ["prog"]:prog
+    }
+
+          return d
+
+  }
+  @get('/intern/projects/{id}/tasks', {
+    responses: {
+      '200': {
+        description: 'Array of Project has many Task',
+        content: {
+          'application/json': {
+            schema: {type: 'array', items: getModelSchemaRef(Project)},
+          },
+        },
+      },
+    },
+  })
+  async findalltask(
+    @param.path.string('id') id: number,
+    @param.query.object('filter') filter?: Filter<Project>,
+  ): Promise<Task[]> {
+    const det=await this.projectRepository.findById(id,filter)
+    const email=det['assignedto']
+    const notcomp=await this.taskRepository.find({
+      where: {and: [{assignedto:email}, {status:"not completed"},{projectId:id}]},})
+      const comp=await this.taskRepository.find({
+        where: {and: [{assignedto:email}, {status:"completed"},{projectId:id}]},})
+        const prog=await this.taskRepository.find({
+          where: {and: [{assignedto:email}, {status:"in progress"},{projectId:id}]},})
     const d:any={
       ["comp"]:comp,
       ["notcomp"]:notcomp,
