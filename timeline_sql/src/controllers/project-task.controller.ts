@@ -33,7 +33,9 @@ export class ProjectTaskController {
   ) { }
 
   @get('/admin/projects/{id}/tasks', {
+
     responses: {
+
       '200': {
         description: 'Array of Project has many Task',
         content: {
