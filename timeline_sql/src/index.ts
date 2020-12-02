@@ -33,13 +33,12 @@ if (require.main === module) {
         setServersFromRequest: true,
       },
       cors: {
-
-        origin: 'https://timelineadminz.netlify.app/,*,https://timelinezz.netlify.app/',
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-        preflightContinue: false,
+        origin: '*',
+        methods: 'GET,POST,PATCH,DELETE,PUT,OPTIONS',
+        preflightContinue: true,
         optionsSuccessStatus: 204,
-        credentials: true,
-
+        maxAge: 86400,
+        credentials: true
       },
     },
   };
