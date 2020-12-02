@@ -34,16 +34,12 @@ if (require.main === module) {
       },
       cors: {
 
-        // origin: '*',
-        // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-        // preflightContinue: false,
-        // optionsSuccessStatus: 204,
-        // credentials: true,
-        "params": {
-          "origin": true,
-          "credentials": false,
-          "maxAge": 86400
-        }
+        origin: 'https://timelineadminz.netlify.app/,*,https://timelinezz.netlify.app/',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
+        credentials: true,
+
       },
     },
   };
