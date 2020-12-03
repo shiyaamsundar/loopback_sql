@@ -127,9 +127,7 @@ export class ProjectTaskController {
   ): Promise<Task> {
 
 
-    const admindet=await this.adminRepository.find({where:{id:id}})
 
-    console.log(admindet)
 
     const transporter = nodemailer.createTransport(
       `smtps://17tucs221@skct.edu.in:shiyaam123456789@smtp.gmail.com`
@@ -139,7 +137,7 @@ export class ProjectTaskController {
       from : '17tucs221@skct.edu.in',
       to : `${task.assignedto}`,
       subject : `${task.title}`,
-      text: `You have been invited to a task  by:- ${admindet[0]['email']} Descption:- ${task.description} `
+      text: `You have been invited to a task  by:- ${task.createdby} Descption:- ${task.description} `
     };
 
     transporter.sendMail( mailOptions, (error, info) => {
@@ -149,10 +147,9 @@ export class ProjectTaskController {
       console.log(`Message Sent ${info.response}`);
     });
 
-    console.log(admindet[0]['email'])
 
 
-
+    console.log(task)
     return this.projectRepository.tasks(id).create(task);
 
   }
