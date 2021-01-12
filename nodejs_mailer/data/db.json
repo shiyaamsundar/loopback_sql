@@ -1,0 +1,15 @@
+{
+  "ids": {
+    "Data": 2
+  },
+  "models": {
+    "Data": {
+      "1": "{\"id\":1,\"email\":\"shiyaam1@gmail.com\",\"sent\":true}",
+      "2": "{\"id\":2,\"email\":\"abcd\",\"sent\":true}",
+      "3": "{\"id\":3,\"email\":\"shiyaam2@gmail.com\",\"sent\":true}",
+      "4": "{\"id\":4,\"email\":\"shiyaam3@gmail.com\",\"sent\":true}",
+      "5": "{\"id\":5,\"email\":\"shiyaam4@gmail.com\",\"sent\":true}",
+      "6": "{\"id\":6,\"email\":\"shiyaam5@gmail.com\",\"sent\":true}"
+    }
+  }
+}
