@@ -54,6 +54,7 @@
     "@loopback/rest": "^9.1.0",
     "@loopback/rest-explorer": "^3.0.4",
     "@loopback/service-proxy": "^3.0.4",
+    "@supercharge/promise-pool": "^1.6.0",
     "@types/async": "^3.2.5",
     "@types/cron": "^1.7.2",
     "@types/node-cron": "^2.0.3",

@@ -20,10 +20,12 @@ import {
 
   requestBody
 } from '@loopback/rest';
+import PromisePool from '@supercharge/promise-pool/dist';
 import {CronJob} from 'cron';
 import * as nodemailer from 'nodemailer';
 import {Data} from '../models';
 import {DataRepository} from '../repositories';
+
 
 
 
@@ -100,10 +102,12 @@ export class EmailcontrollerController {
 
 
 
-  async sendddmail(mails:any,notdelivered:any){
+  async sendddmail(mails:any){
 
 
-    for(let i=0;i<mails.length;i++){
+
+
+    //for(let i=0;i<mails.length;i++){
 
     const transporter = nodemailer.createTransport(
       `smtps://17tucs221@skct.edu.in:shiyaam123456789@smtp.gmail.com`
@@ -111,7 +115,7 @@ export class EmailcontrollerController {
 
     const mailOptions = {
       from : '17tucs221@skct.edu.in',
-      to : `${mails[i]}`,
+      to : `${mails['email']}`,
       subject :' hello world',
       text: `You have been invited `
     };
@@ -119,14 +123,14 @@ export class EmailcontrollerController {
 
     await transporter.sendMail( mailOptions, (error:any, info:any) => {
       if (error) {
-        notdelivered.push(mails[i])
+        // notdelivered.push(mails[i])
         return console.log(`error: ${error}`);
 
       }
       console.log(`Message Sent ${info.response}`,mailOptions['to']);
 
     });
-  }
+  //}
 
 
   }
@@ -149,51 +153,20 @@ export class EmailcontrollerController {
     @param.filter(Data) filter?: Filter<Data>,
   ): Promise<Data[]> {
     let res:any= await this.dataRepository.find(filter);
-    let i=0
-    let cnt=0
-    let j=10000
-    let arr:any=[]
-    let notsent:any=[]
 
-    this.cronJob=new CronJob('* * * * * *',async ()=>{
+    const { results, errors } = await PromisePool
+  .withConcurrency(10000)
+  .for(res)
+  .process(async data => {
 
+    this.sendddmail(data)
 
-      if(res.length<=i)
-      {
-
-        console.log('Stopped..');
-        console.log(notsent)
-
-
-        this.cronJob.stop()
-      }
-
-      if(i<j+cnt)
-      {
-        arr.push(res[i]['email'])
-        i+=1
-      }
-
-      else{
-         await this.sendddmail(arr,notsent)
-        console.log(arr)
-        arr=[]
-        cnt+=j
-      }
+  })
 
 
 
 
-    })
 
-
-
-
-    if(!this.cronJob.running){
-      console.log('started..');
-
-      this.cronJob.start()
-    }
 
     return res
   }
@@ -385,3 +358,50 @@ export class EmailcontrollerController {
 //   mean while the cron process gets ready with the next set of email id
 //   so it simultaneously processes the data
 //  we will also get the mail id that fails in the send mail function
+
+
+    // let i=0
+    // let cnt=0
+    // let j=10000
+    // let arr:any=[]
+    // let notsent:any=[]
+
+    // this.cronJob=new CronJob('* * * * * *',async ()=>{
+
+
+    //   if(res.length<=i)
+    //   {
+
+    //     console.log('Stopped..');
+    //     console.log(notsent)
+
+
+    //     this.cronJob.stop()
+    //   }
+
+    //   if(i<j+cnt)
+    //   {
+    //     arr.push(res[i]['email'])
+    //     i+=1
+    //   }
+
+    //   else{
+    //      await this.sendddmail(arr,notsent)
+    //     console.log(arr)
+    //     arr=[]
+    //     cnt+=j
+    //   }
+
+
+
+
+    // })
+
+
+
+
+    // if(!this.cronJob.running){
+    //   console.log('started..');
+
+    //   this.cronJob.start()
+    // }
