@@ -20,13 +20,11 @@ import {
 
   requestBody
 } from '@loopback/rest';
-import PromisePool from '@supercharge/promise-pool/dist';
+import * as async from "async";
 import {CronJob} from 'cron';
 import * as nodemailer from 'nodemailer';
 import {Data} from '../models';
 import {DataRepository} from '../repositories';
-
-
 
 
 
@@ -101,13 +99,25 @@ export class EmailcontrollerController {
   }
 
 
-
-  async sendddmail(mails:any){
-
-
+  // async parallel(res:any,callback:any){
+  //   return _parallel(eachOf,res,callback)
 
 
-    //for(let i=0;i<mails.length;i++){
+  // }
+
+//   export default function parallelLimit(tasks, limit, callback) {
+//     return parallel(eachOfLimit(limit), tasks, callback);
+// }
+
+
+
+
+  async sendddmail(mailid:any){
+
+
+
+
+
 
     const transporter = nodemailer.createTransport(
       `smtps://17tucs221@skct.edu.in:shiyaam123456789@smtp.gmail.com`
@@ -115,7 +125,7 @@ export class EmailcontrollerController {
 
     const mailOptions = {
       from : '17tucs221@skct.edu.in',
-      to : `${mails['email']}`,
+      to : `${mailid}`,
       subject :' hello world',
       text: `You have been invited `
     };
@@ -130,7 +140,6 @@ export class EmailcontrollerController {
       console.log(`Message Sent ${info.response}`,mailOptions['to']);
 
     });
-  //}
 
 
   }
@@ -153,15 +162,89 @@ export class EmailcontrollerController {
     @param.filter(Data) filter?: Filter<Data>,
   ): Promise<Data[]> {
     let res:any= await this.dataRepository.find(filter);
+    let notdelivered:any=[]
 
-    const { results, errors } = await PromisePool
-  .withConcurrency(10000)
-  .for(res)
-  .process(async data => {
+  //   const { results, errors } = await PromisePool
+  // .withConcurrency(10000)
+  // .for(res)
+  // .process(async data => {
 
-    this.sendddmail(data)
+  //   this.sendddmail(data)
 
+  // })
+
+
+//-------------------------------------------------
+  //queue
+
+
+
+  let taskQueue=async.queue(function( res,callback:any){
+
+    console.log('sending mail to',res)
+    const transporter = nodemailer.createTransport(
+      `smtps://17tucs221@skct.edu.in:shiyaam123456789@smtp.gmail.com`
+    );
+
+    const mailOptions = {
+      from : '17tucs221@skct.edu.in',
+      to : `${res}`,
+      subject :' hello world',
+      text: `You have been invited `
+    };
+
+
+     transporter.sendMail( mailOptions, (error:any, info:any) => {
+      if (error) {
+        notdelivered.push(res)
+        console.log(`error: ${error}`);
+
+      }
+      console.log(`Message Sent ${info.response}`,mailOptions['to']);
+
+    });
+
+
+
+    console.log('waiting to be processed',taskQueue.length());
+
+
+    setTimeout(function(){
+        callback()
+    },1000)
+    console.log('-----------------------');
+
+
+    if(taskQueue.length()==0)
+    {
+      console.log('all processed',notdelivered)
+    }
+
+  },1)
+
+  for(let i=0;i<res.length;i++)
+  {
+  taskQueue.push(res[i]['email'],function(err){
+    if(err){
+      console.log(err);
+
+    }
   })
+}
+
+taskQueue.unshift(res[0],function(err){
+  if(err){
+    console.log(err);
+
+  }
+})
+
+
+
+
+
+
+
 
 
 

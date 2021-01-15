@@ -141,3 +141,130 @@
 
     //   this.cronJob.start()
     // }
+
+
+    // sendmail(data){
+    //     async.parallel([
+    //         for(let i=0;i<data.length)
+    //         function(callback) {
+    //             setTimeout(function() {
+    //                 callback(null, 'one');
+    //             }, 200);
+    //         },
+
+    //     ]
+
+    //     )
+    // }
+
+    // let j=0;
+
+    // this.cronJob=new CronJob('* * * * * *',async ()=>{
+
+    //     arr=[]
+    // if(j>=res.length){
+    //     this.cronJob.stop()
+    // }
+
+    // for(let i=0+j;i<limit;i++){
+    //     arr.push(res[i])
+
+
+    //     }
+    //     j+=i
+    //     sendmail(arr)
+    // }
+
+
+
+    //-------------------------------------------------------------------\
+
+    let taskQueue=async.queue(function( res,callback:any){
+
+        //     console.log('sending mail to',res)
+        //     const transporter = nodemailer.createTransport(
+        //       `smtps://17tucs221@skct.edu.in:shiyaam123456789@smtp.gmail.com`
+        //     );
+
+        //     const mailOptions = {
+        //       from : '17tucs221@skct.edu.in',
+        //       to : `${res}`,
+        //       subject :' hello world',
+        //       text: `You have been invited `
+        //     };
+
+
+        //      transporter.sendMail( mailOptions, (error:any, info:any) => {
+        //       if (error) {
+        //         notdelivered.push(res)
+        //         console.log(`error: ${error}`);
+
+        //       }
+        //       console.log(`Message Sent ${info.response}`,mailOptions['to']);
+
+        //     });
+
+
+
+        //     console.log('waiting to be processed',taskQueue.length());
+
+
+        //     setTimeout(function(){
+        //         callback()
+        //     },1000)
+        //     console.log('-----------------------');
+
+
+        //     if(taskQueue.length()==0)
+        //     {
+        //       console.log('all processed',notdelivered)
+        //     }
+
+        //   },1)
+
+        //   for(let i=0;i<res.length;i++)
+        //   {
+        //   taskQueue.push(res[i]['email'],function(err){
+        //     if(err){
+        //       console.log(err);
+
+        //     }
+        //   })
+        // }
+
+        // taskQueue.unshift(res[0],function(err){
+        //   if(err){
+        //     console.log(err);
+
+        //   }
+        // })
+
+
+    //------
+
+let taskQueue=async.queue(function(task,callback){
+
+    console.log('sending mail to',task['mail'])
+    sendmail(task)
+    console.log('waiting to be processed',taskQueue.length);
+    console.log('-----------------------');
+
+    setTimeout(function(){
+        callback()
+    },1000)
+
+},100)
+
+
+taskQueue.drain=function(){
+    console.log('all req has been processed');
+}
+
+_.each(res,function(task){
+    taskQueue.push(task,function(err){
+        if(err)
+        {
+            console.log(err);
+        }
+    })
+})
