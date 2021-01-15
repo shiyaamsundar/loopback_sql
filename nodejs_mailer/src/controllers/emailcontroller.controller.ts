@@ -99,17 +99,6 @@ export class EmailcontrollerController {
   }
 
 
-  // async parallel(res:any,callback:any){
-  //   return _parallel(eachOf,res,callback)
-
-
-  // }
-
-//   export default function parallelLimit(tasks, limit, callback) {
-//     return parallel(eachOfLimit(limit), tasks, callback);
-// }
-
-
 
 
   async sendddmail(mailid:any){
@@ -179,66 +168,133 @@ export class EmailcontrollerController {
 
 
 
-  let taskQueue=async.queue(function( res,callback:any){
+//   let taskQueue=async.queue(function( res,callback:any){
 
-    console.log('sending mail to',res)
-    const transporter = nodemailer.createTransport(
-      `smtps://17tucs221@skct.edu.in:shiyaam123456789@smtp.gmail.com`
-    );
+//     console.log('sending mail to',res)
+//     const transporter = nodemailer.createTransport(
+//       `smtps://17tucs221@skct.edu.in:shiyaam123456789@smtp.gmail.com`
+//     );
 
-    const mailOptions = {
-      from : '17tucs221@skct.edu.in',
-      to : `${res}`,
-      subject :' hello world',
-      text: `You have been invited `
-    };
-
-
-     transporter.sendMail( mailOptions, (error:any, info:any) => {
-      if (error) {
-        notdelivered.push(res)
-        console.log(`error: ${error}`);
-
-      }
-      console.log(`Message Sent ${info.response}`,mailOptions['to']);
-
-    });
+//     const mailOptions = {
+//       from : '17tucs221@skct.edu.in',
+//       to : `${res}`,
+//       subject :' hello world',
+//       text: `You have been invited `
+//     };
 
 
+//      transporter.sendMail( mailOptions, (error:any, info:any) => {
+//       if (error) {
+//         notdelivered.push(res)
+//         console.log(`error: ${error}`);
 
-    console.log('waiting to be processed',taskQueue.length());
+//       }
+//       console.log(`Message Sent ${info.response}`,mailOptions['to']);
+
+//     });
 
 
-    setTimeout(function(){
-        callback()
-    },1000)
-    console.log('-----------------------');
+
+//     console.log('waiting to be processed',taskQueue.length());
 
 
-    if(taskQueue.length()==0)
-    {
-      console.log('all processed',notdelivered)
-    }
+//     setTimeout(function(){
+//         callback()
+//     },1000)
+//     console.log('-----------------------');
 
-  },1)
 
-  for(let i=0;i<res.length;i++)
-  {
-  taskQueue.push(res[i]['email'],function(err){
-    if(err){
-      console.log(err);
+//     if(taskQueue.length()==0)
+//     {
+//       console.log('all processed',notdelivered)
+//     }
 
-    }
-  })
+//   },1)
+
+//   for(let i=0;i<res.length;i++)
+//   {
+//   taskQueue.push(res[i]['email'],function(err){
+//     if(err){
+//       console.log(err);
+
+//     }
+//   })
+// }
+
+// taskQueue.unshift(res[0],function(err){
+//   if(err){
+//     console.log(err);
+
+//   }
+// })
+
+
+//parallel--------------------------------
+
+let cnt=0
+
+let asyncTask = function(email:string) {
+  return function (cb:any) {
+      setTimeout(function() {
+        const transporter = nodemailer.createTransport(
+          `smtps://17tucs221@skct.edu.in:shiyaam123456789@smtp.gmail.com`
+        );
+
+        const mailOptions = {
+          from : '17tucs221@skct.edu.in',
+          to :`${email}`,
+          subject :' hello world',
+          text: `You have been invited `
+        };
+
+
+
+
+
+          transporter.sendMail( mailOptions, (error:any, info:any) => {
+          if (error) {
+            notdelivered.push(email)
+            console.log(`error: ${error}`);
+
+          }
+          console.log(`Message Sent `,mailOptions['to'],',','not delivered',notdelivered);
+
+        });
+
+
+        cnt+=1
+
+
+          cb(null, email);
+
+      },
+
+      ),1000}
+
+};
+
+
+let when_done=function(err:any,notdelivered:any){
+  if(!err)
+
+  console.log('completed');
+
+
+
+}
+let task:any=[
+
+]
+
+
+for(let i=0;i<res.length;i++)
+{
+  task.push(asyncTask(res[i]['email']))
 }
 
-taskQueue.unshift(res[0],function(err){
-  if(err){
-    console.log(err);
 
-  }
-})
 
+async.parallelLimit(task,1,when_done)
 
 
 
