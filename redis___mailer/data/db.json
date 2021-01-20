@@ -1,0 +1,11 @@
+{
+  "ids": {
+    "Email": 3
+  },
+  "models": {
+    "Email": {
+      "1": "{\"id\":\"1\",\"name\":\"hello\",\"email\":\"abcd@gmail.com\",\"delivered\":false}",
+      "2": "{\"id\":\"2\",\"name\":\"hello\",\"email\":\"abcdd@gmail.com\",\"delivered\":false}"
+    }
+  }
+}

@@ -268,3 +268,153 @@ _.each(res,function(task){
         }
     })
 })
+
+
+
+  //   const { results, errors } = await PromisePool
+  // .withConcurrency(10000)
+  // .for(res)
+  // .process(async data => {
+
+  //   this.sendddmail(data)
+
+  // })
+
+
+//-------------------------------------------------
+  //queue
+
+
+
+//   let taskQueue=async.queue(function( res,callback:any){
+
+//     console.log('sending mail to',res)
+//     const transporter = nodemailer.createTransport(
+//       `smtps://17tucs221@skct.edu.in:shiyaam123456789@smtp.gmail.com`
+//     );
+
+//     const mailOptions = {
+//       from : '17tucs221@skct.edu.in',
+//       to : `${res}`,
+//       subject :' hello world',
+//       text: `You have been invited `
+//     };
+
+
+
+//      transporter.sendMail( mailOptions, (error:any, info:any) => {
+//       if (error) {
+//         notdelivered.push(res)
+//         console.log(`error: ${error}`);
+
+//       }
+//       console.log(`Message Sent ${info.response}`,mailOptions['to']);
+
+//     });
+
+
+
+//     console.log('waiting to be processed',taskQueue.length());
+
+
+//     setTimeout(function(){
+//         callback()
+//     },1000)
+//     console.log('-----------------------');
+
+
+//     if(taskQueue.length()==0)
+//     {
+//       console.log('all processed',notdelivered)
+//     }
+
+//   },1)
+
+//   for(let i=0;i<res.length;i++)
+//   {
+//   taskQueue.push(res[i]['email'],function(err){
+//     if(err){
+//       console.log(err);
+
+//     }
+//   })
+// }
+
+// taskQueue.unshift(res[0],function(err){
+//   if(err){
+//     console.log(err);
+
+//   }
+// })
+
+
+//parallel--------------------------------
+
+let cnt=0
+
+let asyncTask = function(email:string) {
+  return function (cb:any) {
+      setTimeout(function() {
+        const transporter = nodemailer.createTransport(
+          `smtps://17tucs221@skct.edu.in:shiyaam123456789@smtp.gmail.com`
+        );
+
+        const mailOptions = {
+          from : '17tucs221@skct.edu.in',
+          to :`${email}`,
+          subject :' hello world',
+          text: `You have been invited `
+        };
+
+
+
+
+
+          transporter.sendMail( mailOptions, (error:any, info:any) => {
+          if (error) {
+            notdelivered.push(email)
+            console.log(`error: ${error}`);
+
+          }
+          console.log(`Message Sent `,mailOptions['to'],',','not delivered',notdelivered);
+
+        });
+
+
+        cnt+=1
+
+
+          cb(null, email);
+
+      },
+
+      ),1000}
+
+};
+
+
+let when_done=function(err:any,notdelivered:any){
+  if(!err)
+
+  console.log('completed');
+
+
+
+}
+let task:any=[
+
+]
+
+
+for(let i=0;i<res.length;i++)
+{
+  task.push(asyncTask(res[i]['email']))
+}
+
+
+
+async.parallelLimit(task,1,when_done)
+
+
+
+    return res
