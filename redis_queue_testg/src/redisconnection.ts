@@ -133,6 +133,9 @@ export class RedisService {
   //  await queue.add('cars', { color: 'ccccc' },{ removeOnComplete: true, removeOnFail: 1000 },);
   //  await queue.add('cars', { color: 'dd' },{ removeOnComplete: true, removeOnFail: 1000 },);
 
+  //  await queue.add('cars', { color: 'dd' },{ removeOnComplete: true, removeOnFail: 1000 }, { priority: 7 });
+
+
 
 
   //   await queue.add('submarine', { color: 'yellow' },
@@ -160,7 +163,17 @@ export class RedisService {
 
     // const queue=Queue('muqueue')
 
+    // const worker = new Worker('painter', async job => paintCar(job), {
+    //   limiter: {
+    //     max: 10,
+    //     duration: 1000
+    //   }, { connection: {
+    //   host: "127.0.0.1",
+    //   port: 49153
+    // }});
 
+
+    // const scheduler = new QueueScheduler('painter');
 
 
 }}
