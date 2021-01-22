@@ -77,7 +77,8 @@ export class EmailcontrollerController {
     let res=await this.detailsRepository.find(filter);
     await this.redisService.redisQueue(res)
 
-    return res
+    let arr:any=[]
+    return  res
 
   }
 

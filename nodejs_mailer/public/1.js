@@ -88,12 +88,6 @@
 
 
 
-//   when api is called it collects all the data present in db/file  (email with id's)
-//   And using cron we can loop through infinite time based on the limit begin set by the user it adds the email id in an array
-//   after the limit is being reached it calls the sendmail function , And it sends the mail
-//   mean while the cron process gets ready with the next set of email id
-//   so it simultaneously processes the data
-//  we will also get the mail id that fails in the send mail function
 
 
     // let i=0
@@ -157,23 +151,7 @@
     //     )
     // }
 
-    // let j=0;
 
-    // this.cronJob=new CronJob('* * * * * *',async ()=>{
-
-    //     arr=[]
-    // if(j>=res.length){
-    //     this.cronJob.stop()
-    // }
-
-    // for(let i=0+j;i<limit;i++){
-    //     arr.push(res[i])
-
-
-    //     }
-    //     j+=i
-    //     sendmail(arr)
-    // }
 
 
 
